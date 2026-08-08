@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EYEreport — User Manual</title>
+<style>
+  :root {
+    --ink: #1d1d1f;
+    --muted: #6e6e73;
+    --accent: #0a5fd7;
+    --rule: #d2d2d7;
+    --card: #f5f5f7;
+    --warn-bg: #fff8e6;
+    --warn-edge: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.55;
+  }
+  main { max-width: 46rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  header.title {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1.25rem; margin-bottom: 2rem;
+  }
+  header.title h1 { margin: 0 0 .25rem; font-size: 2rem; }
+  header.title p { margin: 0; color: var(--muted); }
+  h2 {
+    font-size: 1.4rem; margin: 2.5rem 0 .75rem;
+    padding-top: 1rem; border-top: 1px solid var(--rule);
+  }
+  h3 { font-size: 1.1rem; margin: 1.5rem 0 .5rem; }
+  p, li { font-size: 1rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, kbd {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--card); border-radius: 4px; padding: .1em .35em;
+    font-size: .92em;
+  }
+  kbd { border: 1px solid var(--rule); border-bottom-width: 2px; }
+  .card {
+    background: var(--card); border-radius: 10px;
+    padding: 1rem 1.25rem; margin: 1rem 0;
+  }
+  .note {
+    background: var(--warn-bg); border-left: 4px solid var(--warn-edge);
+    border-radius: 6px; padding: .75rem 1rem; margin: 1rem 0;
+  }
+  .toc { columns: 2; column-gap: 2rem; }
+  .toc ul { margin: 0; padding-left: 1.2rem; }
+  .toc li { margin: .2rem 0; break-inside: avoid; }
+  ol.steps > li { margin: .6rem 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: .9rem; }
+  @media (max-width: 600px) { .toc { columns: 1; } }
+  @media print { body { color: #000; } a { color: #000; } }
+</style>
+</head>
+<body>
+<main>
+
+<header class="title">
+  <h1>EYEreport</h1>
+  <p>User Manual — clinical report composer for eye-care correspondence</p>
+</header>
+
+<p><strong>EYEreport</strong> composes clinician-to-clinician letters — referral letters, examination
+reports, driver's-licence vision reports, and screening letters. You fill in a template, adjust a few
+fields, and generate a PDF stamped onto your office letterhead, ready to print, fax, or send to your
+EMR. Patient information stays on your device; the app sends nothing over the network.</p>
+
+<nav class="card toc">
+  <strong>Contents</strong>
+  <ul>
+    <li><a href="#quickstart">Quick Start</a></li>
+    <li><a href="#concepts">How EYEreport Thinks</a></li>
+    <li><a href="#newreport">The New Report Tab</a></li>
+    <li><a href="#blocks">Block-by-Block Guide</a></li>
+    <li><a href="#keyboard">Keyboard-First Editing</a></li>
+    <li><a href="#preview">Preview, Print &amp; Export</a></li>
+    <li><a href="#patientimport">Importing Patient Details from IRIS</a></li>
+    <li><a href="#reopen">Reopening an Exported Report</a></li>
+    <li><a href="#templates">The Templates Tab</a></li>
+    <li><a href="#settings">The Settings Tab</a></li>
+    <li><a href="#backup">Backup &amp; Restore</a></li>
+    <li><a href="#privacy">Your Data &amp; Privacy</a></li>
+    <li><a href="#support">Support</a></li>
+  </ul>
+</nav>
+
+<h2 id="quickstart">Quick Start</h2>
+<p>Five minutes of one-time setup, then a report takes a couple of minutes.</p>
+<ol class="steps">
+  <li><strong>Set up your identity.</strong> Go to <em>Settings</em> and enter your name, credentials,
+    and practitioner ID under PRACTITIONER. These print in the signature area of every report.</li>
+  <li><strong>Add your signature.</strong> Under SIGNATURE, tap <em>Sign…</em> and draw with your finger,
+    Apple Pencil, or mouse — or <em>Import from file…</em> to use a scanned signature image (.png/.jpg).</li>
+  <li><strong>Import your letterhead.</strong> Under LETTERHEADS, tap <em>Import letterhead PDF…</em> and pick
+    your office letterhead. Then tap the letterhead's name to open the calibration screen: drag the handles
+    so the box outlines the blank writing area of your letterhead (avoiding the logo and footer), and drag
+    the pin to where page numbers should print. Do this once per letterhead.</li>
+  <li><strong>Save your frequent referral recipients.</strong> Under PROVIDERS → <em>Manage providers…</em>,
+    add the doctors you write to regularly (name and fax). You can also save them on the fly from inside
+    a report.</li>
+  <li><strong>Write a report.</strong> Go to <em>New Report</em>, pick a template (or Blank Report), and
+    fill in the fields — everything you type shows in <span style="color:#d70015">red</span> so your
+    entries stand out from the boilerplate. Press <kbd>Tab</kbd> to jump field to field.</li>
+  <li><strong>Preview and send.</strong> Tap <em>Preview</em>. Check the letterhead and text size, then
+    print it, save it as a PDF, or share it straight to your EMR — all from the preview toolbar.</li>
+</ol>
+
+<h2 id="concepts">How EYEreport Thinks</h2>
+<ul>
+  <li><strong>A report is a stack of blocks.</strong> Recipient, date, patient details, salutation,
+    prose paragraphs, a findings grid, an Impressions/Plan box, closing, signature. Any letter type is
+    just a different arrangement of these blocks.</li>
+  <li><strong>Templates are starting points, not live links.</strong> Opening a template drops a copy
+    into the editor; editing the copy never changes the template. Save any report back as a new template
+    at any time — patient details are automatically stripped when you do.</li>
+  <li><strong>Letterhead is separate from content.</strong> Any report can print on any letterhead
+    (or plain paper). Your letterhead choice in Preview sticks until you change it.</li>
+  <li><strong>One live draft.</strong> The report you're working on auto-saves continuously (encrypted)
+    and survives quitting the app. There is exactly one draft — starting a new report replaces it, and
+    <em>Start Over</em> discards it.</li>
+</ul>
+
+<h2 id="newreport">The New Report Tab</h2>
+<h3>The chooser</h3>
+<ul>
+  <li><strong>Resume Draft</strong> appears at the top whenever a saved draft exists, showing the patient
+    name and when it was last saved. Tap to continue exactly where you left off.</li>
+  <li><strong>Blank Report</strong> starts from nothing; add blocks with the <strong>＋</strong> menu.</li>
+  <li><strong>Templates</strong> lists your saved templates in your chosen order. Use the search field
+    to filter by name.</li>
+  <li><strong>Import report PDF…</strong> reopens a report you previously exported from EYEreport —
+    see <a href="#reopen">Reopening an Exported Report</a>.</li>
+</ul>
+<div class="note">Starting a new report while a modified draft exists asks for confirmation first, so a
+half-finished report can't be lost by an accidental tap.</div>
+
+<h3>The editor</h3>
+<ul>
+  <li>Fields you type into render in <span style="color:#d70015">red</span> on screen (never in the
+    printed report) so data entry is visually distinct from fixed wording.</li>
+  <li><strong>＋ (Add Block)</strong> appends any block type, including a boxed prose block (framed text,
+    like the Impressions/Plan box, for non-standard letters).</li>
+  <li><strong>Arrange</strong> switches to arrange mode: drag blocks by their header to reorder, tap the
+    trash to delete, and use the <em>Add block here</em> buttons to insert a block at any position.
+    Deleting a block that contains text you typed asks for confirmation.</li>
+  <li><strong>Start Over</strong> (top left) abandons the current report and clears the draft — with a
+    warning if you've typed anything.</li>
+  <li><strong>Save as Template / Preview</strong> sit side by side in the bottom bar. Save as Template
+    stores the current structure and boilerplate (with patient details and dates blanked); Preview
+    renders the finished PDF.</li>
+</ul>
+
+<h2 id="blocks">Block-by-Block Guide</h2>
+
+<h3>Recipient</h3>
+<ul>
+  <li><strong>Provider + fax</strong> prints one line: <code>To: Dr. Jane Smith&nbsp;&nbsp;Fax: (403) 555-0100</code>
+    ("Fax:" is omitted when empty). As you type the name, matching saved providers appear beneath the
+    field — tap one, or press <kbd>↓</kbd>/<kbd>↑</kbd> then <kbd>Return</kbd> to fill name and fax
+    without leaving the keyboard. A button below offers to add the current entry to your provider list
+    (or update a saved fax).</li>
+  <li><strong>Freeform</strong> is a single line for agencies ("To: Alberta Motor Vehicle Registry").</li>
+  <li><strong>None</strong> prints nothing.</li>
+</ul>
+
+<h3>Date</h3>
+<p>Type day, month, year as numbers; the month shows as "AUG" when you leave the field, and prints
+that way ("9 AUG 2026"). A <strong>Today</strong> button appears beside the fields whenever the entered
+date <em>isn't</em> today — its presence is your stale-date flag; tap it to stamp the current date.</p>
+
+<h3>Patient</h3>
+<ul>
+  <li>Name, date of birth, AHC, phone, and address, with a print-layout picker:
+    <strong>Full box</strong> (bordered grid with labels) or <strong>Inline labels</strong>.</li>
+  <li>Each row's switch controls whether it <em>prints</em> — data stays put either way.</li>
+  <li><strong>Edit fields</strong> unlocks structure: rename labels (e.g. AHC → "PHN"), reorder rows,
+    delete rows, and restore deleted ones with <em>Add field</em>. Structure choices ride into templates.</li>
+  <li>Phone auto-formats to (999)&nbsp;999-9999 and AHC to 99999-9999 when you leave the field.</li>
+</ul>
+
+<h3>Salutation</h3>
+<p>"Dear …," can <strong>mirror the recipient's name</strong> automatically (the default) — change the
+recipient and the salutation follows. Toggle mirroring off to type a different name; "To Whom It May
+Concern" and fully custom salutations are also available. The name prints exactly as entered, so include
+the title you want ("Dr. Smith", "Ms. Jones").</p>
+
+<h3>Prose</h3>
+<ul>
+  <li>Free paragraphs with <strong>bold</strong>, <em>italic</em>, and underline from the formatting bar,
+    plus bulleted and numbered lists.</li>
+  <li>Lists continue automatically: <kbd>Return</kbd> on a list item starts the next one;
+    <kbd>Return</kbd> on an empty item ends the list.</li>
+  <li>Templates can contain <strong>pick-one choices</strong> (tap a segment or type your own wording) —
+    those paragraphs show individual controls instead of the single text box.</li>
+</ul>
+
+<h3>Findings</h3>
+<ul>
+  <li>An OD/OS grid. Values with built-in affordances — the "20/" prefix on acuity, "mmHg" after
+    pressures — print automatically and are suppressed entirely when a value is left empty.</li>
+  <li>Each row's switch controls whether it prints; excluded rows dim but keep their data.</li>
+  <li><strong>Edit fields</strong> unlocks the grid itself: rename rows, edit or clear the prefix/suffix,
+    add, duplicate, delete, and reorder rows. A row can also span the full width instead of OD/OS.</li>
+  <li>Long grids paginate cleanly — column headers repeat on the next page, and a row never splits.</li>
+</ul>
+
+<h3>Impressions / Plan</h3>
+<p>Two fixed sections ("Impressions:", "Plan:"), each a rich-text box seeded with a ready-to-type
+bullet. One formatting bar drives both. The pair prints inside a single ruled box. Section headings are
+editable behind <strong>Edit fields</strong>.</p>
+
+<h3>Closing &amp; Signature</h3>
+<p>The closing picker offers the standard sentences ("Thank you for sharing in the care…", "please
+contact our office…") or custom text. The signature block picks the valediction ("Regards," etc.) and
+shows a live preview of your signature ink and printed identity from the practitioner profile, with a
+shortcut to edit it in Settings. Printed reports leave wet-signing room when no signature image is on
+file.</p>
+
+<h2 id="keyboard">Keyboard-First Editing</h2>
+<p>EYEreport is designed for an external keyboard:</p>
+<ul>
+  <li><kbd>Tab</kbd> / <kbd>Shift-Tab</kbd> move through every field in the document, top to bottom, in
+    visual order — including findings cells and each prose box.</li>
+  <li>Short fields select their contents when focused, so you can type straight over old values.</li>
+  <li><kbd>↓</kbd>/<kbd>↑</kbd> + <kbd>Return</kbd> pick provider suggestions in the recipient block.</li>
+  <li>Dates are typed as numbers — no date-picker wheels.</li>
+</ul>
+
+<h2 id="preview">Preview, Print &amp; Export</h2>
+<ul>
+  <li><strong>Letterhead menu</strong> — pick any stored letterhead or "None (plain)". The choice is
+    remembered app-wide until you change it (also settable by the radio buttons in Settings →
+    LETTERHEADS).</li>
+  <li><strong>Text size menu</strong> — 9–13&nbsp;pt body text (default 11), re-rendered live. The choice
+    is kept with the report and carried into templates saved from it.</li>
+  <li><strong>Print</strong> — the system print dialog, fed the exact rendering on screen.</li>
+  <li><strong>Save to Files</strong> — saves the PDF, named
+    "<code>LASTNAME, Firstname 2026-07-13.pdf</code>", wherever you choose. The surname is
+    capitalised the same way it prints on the letter, whether you typed the name or imported it.</li>
+  <li><strong>Share</strong> — the share sheet, for AirDrop, Messages, or your EMR's share extension.
+    The receiver gets a properly named PDF file.</li>
+</ul>
+<div class="note">The PDF is produced in Helvetica at true letter size, composited onto the letterhead
+within its calibrated safe zone. Multi-page reports stamp "Page N of M" at your calibrated position;
+single-page reports print no page number.</div>
+
+<h2 id="patientimport">Importing Patient Details from IRIS</h2>
+<p>Rather than retyping a patient's details, EYEreport can read them straight out of an IRIS PDF — the
+file excerpt or the exam report. It picks up the name, date of birth, address and AHC number, plus the
+exam findings IRIS records: refraction and visual acuity (from the most recent subjective refraction),
+keratometry, and intraocular pressure.</p>
+
+<h3>Two ways in</h3>
+<ul>
+  <li><strong>Share it from IRIS</strong> (fewest steps): in the EMR's Share sheet, choose EYEreport.
+    The app opens with the details waiting.</li>
+  <li><strong>Import a saved file</strong>: <strong>Import patient details…</strong> on the New Report
+    screen, or the <strong>Patient details</strong> button in the toolbar while a report is open.</li>
+</ul>
+
+<h3>What happens next</h3>
+<p>If a report is already open, a review sheet appears immediately. If you're still on the chooser, the
+details wait at the top of the screen under <em>Patient Details Ready</em> — pick your template as
+usual and the review sheet appears over the new report.</p>
+<p>Nothing is filled in until you tap <strong>Apply to Report</strong>. The review sheet shows every
+value that was read, all of them editable, so you check them against the source first. Cancel applies
+nothing.</p>
+
+<div class="note"><strong>Where the exam values land.</strong> Findings go into your findings grid by
+row name — "IOP", "IOP (NCT)", "Tonometry", "Tonometry (NCT)" and "Intraocular pressure" all receive
+pressures; "K" or "Keratometry" receives keratometry; "Refraction" or "Rx" receives the refraction. If a value has no row to go to, the
+review sheet says so before you apply, and the rest still applies. The standard findings grid has no
+keratometry row — add one to your template if you want keratometry imported. Values are stored so they
+print correctly with your row's own "20/" prefix or "mmHg" suffix, and a row you've toggled off stays
+off.</div>
+
+<h3>Corrected and uncorrected acuity</h3>
+<p>Acuity measured <em>with</em> correction always comes across — it's recorded alongside the subjective
+refraction. Acuity measured <em>without</em> correction comes across when the exam recorded it under
+Entrance Skills as unaided.</p>
+<p>Because IRIS records the viewing condition eye by eye, an eye tested with glasses has no unaided
+value to import — so a one-eyed result is normal, and only the eye that was tested unaided is filled
+in. Whatever is already in the other eye's cell is left alone.</p>
+<p>Which row gets which is decided by the row's name:</p>
+<ul>
+  <li>A row marked <strong>sc</strong> — "VA (sc)", "VA unaided", "Uncorrected VA" — receives the
+    <em>uncorrected</em> acuity, and only that.</li>
+  <li>A row marked <strong>cc</strong> — "VA (cc)", "BCVA" — receives the <em>corrected</em> acuity.</li>
+  <li>A row named just <strong>"VA"</strong> counts as corrected. Uncorrected acuity is never put into
+    an unmarked row: if you want it, name the row so it says so.</li>
+</ul>
+<p>Have both rows in a template and both get filled, in whichever order they sit in the grid. Have only
+a cc row on a day when uncorrected was measured, and the review sheet tells you the uncorrected value
+had nowhere to go rather than putting it somewhere wrong.</p>
+
+<h3>A combined "Refraction / VA" row</h3>
+<p>For a post-cataract follow-up you may want the refraction and the acuity it produced in one cell.
+Name a row so it mentions both — <strong>"Refraction / VA"</strong> — and it receives them together:</p>
+<p style="margin-left:1.5rem"><code>-1.00 -0.25 × 100°&nbsp;&nbsp;&nbsp;20/20</code></p>
+<p>Nothing else changes: a template with separate "Refraction" and "VA (cc)" rows still fills them
+separately, and a template with a combined row <em>and</em> separate rows fills all of them. If a
+refraction was recorded with no acuity, a combined row simply takes the refraction alone.</p>
+
+<div class="note"><strong>Check the name split.</strong> IRIS gives one name line, so EYEreport splits
+it into first and last — "Mary-Anne Van Der Berg" becomes Van Der Berg / Mary-Anne. A middle name stays
+with the first name. Where that guess can't be made reliably, correct it in the review sheet.</div>
+
+<div class="note"><strong>Privacy.</strong> A PDF shared into EYEreport is copied into the app by iOS;
+that copy is deleted the moment it's been read. Imported details are held in memory only and reach
+storage exactly where typed details do — inside the report, in the encrypted draft. Nothing is uploaded,
+and the details are not kept in any separate patient list.</div>
+
+<h2 id="reopen">Reopening an Exported Report</h2>
+<p>Every PDF EYEreport produces invisibly carries its own structured source. To reuse a past report —
+a follow-up letter a year later, or a correction —
+choose <strong>Import report PDF…</strong> on the New Report screen and pick the exported file. The
+report opens in the editor <em>exactly</em> as it was: patient details, findings values, impressions,
+formatting — everything editable again. Sharing one of your exported PDFs back into EYEreport from
+another app does the same thing — the app recognises its own reports and reopens them rather than
+treating them as a patient file to read.</p>
+<div class="note"><strong>Check the date.</strong> A reopened report keeps its original date — the
+<strong>Today</strong> button appears beside it as a reminder to restamp before resending. Only PDFs
+exported by EYEreport can be reopened this way; other PDFs (or files rewritten by third-party software)
+can't be reconstructed.</div>
+
+<h2 id="templates">The Templates Tab</h2>
+<ul>
+  <li><strong>Reorder</strong> templates by long-press drag — the order here is the order on the New
+    Report screen.</li>
+  <li><strong>Rename</strong> with the pencil button.</li>
+  <li><strong>Delete</strong> with the trash button.</li>
+  <li>The <strong>…</strong> menu exports all templates as a single file (share it to Files or a
+    colleague) and imports a template file — imported templates are appended, never overwriting yours.
+    Templates contain no patient data.</li>
+</ul>
+
+<h2 id="settings">The Settings Tab</h2>
+<table>
+  <tr><th>Section</th><th>What it does</th></tr>
+  <tr><td>PRACTITIONER</td><td>Your name, credentials, and practitioner ID — printed under the signature
+    line of every report. Empty parts simply don't print.</td></tr>
+  <tr><td>SIGNATURE</td><td>Draw a signature (finger, Pencil, or mouse), import one from an image file,
+    or remove it (with confirmation). Prints in black within the signature area.</td></tr>
+  <tr><td>LETTERHEADS</td><td>Import letterhead PDFs and calibrate each one's safe zone and page-number
+    position. The radio button marks which letterhead Preview opens with; the trash deletes (with
+    confirmation — deleting also discards that letterhead's calibration).</td></tr>
+  <tr><td>PROVIDERS</td><td>Shows how many referral recipients you've saved; <em>Manage providers…</em>
+    opens the editable list (name + fax per row).</td></tr>
+  <tr><td>ABOUT</td><td>App version, developer, licence terms, and support contacts.</td></tr>
+  <tr><td>BACKUP</td><td>Export/import a single backup file of all your setup — see below.</td></tr>
+  <tr><td>RESET</td><td>Returns the app to first-launch state after a warning. Export a backup first.</td></tr>
+</table>
+
+<h2 id="backup">Backup &amp; Restore</h2>
+<p><strong>Export backup…</strong> writes one file (e.g. "EYEreport backup 2026-07-13") containing all
+templates, all letterheads with their calibrations, your practitioner profile including the signature,
+and your provider list. <strong>Import backup…</strong> restores it — after a clear confirmation,
+because importing <em>replaces</em> the app's current contents wholesale.</p>
+<ul>
+  <li>Keep a backup after any significant setup work, and before using <em>Reset App to Defaults</em>.</li>
+  <li>A backup contains <strong>no patient information</strong> — it is safe to store in Files or
+    transfer to a new device.</li>
+  <li>Restoring on a fresh install brings back your entire working environment in one step.</li>
+</ul>
+
+<h2 id="privacy">Privacy Policy</h2>
+
+<p><strong>Effective Date:</strong> July 13, 2026</p>
+
+<p>
+EYEreport is designed to keep your information on your own device. The app does not
+require an account, does not communicate with developer-operated servers, and does
+not collect analytics, advertising identifiers, or other usage data.
+</p>
+
+<h3>Information Collection</h3>
+
+<p>
+The app does not collect, receive, or transmit personal information to the developer.
+All patient information, report content, and practitioner information remain on your
+device unless you explicitly choose to print, save, or share a document.
+</p>
+
+<h3>Patient Information</h3>
+
+<p>
+Patient names and clinical information may be entered while preparing reports. This
+information is used only to generate documents on your device. The developer never
+has access to this information.
+</p>
+
+<p>
+The current working draft is stored locally on your device using encryption and is
+excluded from device backups. Starting a new report or choosing <em>Start Over</em>
+replaces the current draft.
+</p>
+
+<p>
+Patient details may also be read from a PDF you import or share into the app from your
+EMR. When another app shares a PDF, iOS places a copy inside EYEreport; that copy is
+deleted as soon as it has been read. Details read from it are held in memory until you
+confirm them, and are then stored only as part of the report itself — the same place
+and the same encryption as details you type by hand. They are never uploaded, and the
+app keeps no separate patient list.
+</p>
+
+<h3>Stored App Data</h3>
+
+<p>
+Templates, practitioner information, saved providers, letterheads, and app settings
+are stored locally on your device. These items do not contain patient information and
+may be included in your normal device backups, depending on your backup settings.
+</p>
+
+<h3>Exported Documents</h3>
+
+<p>
+PDFs exported from EYEreport contain the patient information visible in the report.
+They also contain embedded document data that allows reports exported by EYEreport
+to be reopened for future editing using <em>Import report PDF</em>. Exported PDFs
+should therefore be handled as confidential clinical documents.
+</p>
+
+<h3>Data Transmission</h3>
+
+<p>
+EYEreport does not transmit information to the developer or to third-party servers.
+When you choose to print, save, AirDrop, email, fax, or otherwise share a document,
+that transfer is performed using services provided by your device or operating system.
+</p>
+
+<h3>Analytics and Tracking</h3>
+
+<p>
+EYEreport does not use analytics services, advertising frameworks, tracking
+technologies, crash-reporting services, or third-party data collection.
+</p>
+
+<h3>Security</h3>
+
+<p>
+Information remains under your control on your device. You are responsible for
+protecting your device, securing exported documents, and complying with applicable
+privacy legislation and professional standards in your jurisdiction.
+</p>
+
+<h3>Changes to This Policy</h3>
+
+<p>
+This Privacy Policy may be updated from time to time. Any revisions will be reflected
+by updating the Effective Date shown above.
+</p>
+
+<h2 id="support">Support</h2>
+<p>Questions, problems, or feature requests: email
+<a href="mailto:xbalsoftware@gmail.com">xbalsoftware@gmail.com</a>.</p>
+
+<footer>
+  EYEreport User Manual · © XBAL Software · EYEreport is a document-composition tool; clinical content
+  and the appropriateness of issued reports remain the responsibility of the issuing practitioner.
+</footer>
+
+</main>
+</body>
+</html>

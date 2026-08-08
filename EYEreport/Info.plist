@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Declaring PDF as a document type is what puts EYEreport in the EMR's
+	     Share sheet. LSSupportsOpeningDocumentsInPlace is explicitly FALSE:
+	     iOS then always hands us a COPY in Documents/Inbox, which
+	     PatientImportInbox deletes as soon as it has read it. Opening the
+	     original in place would leave us holding (and unable to clean up) a
+	     file full of patient data that belongs to another app. The key must be
+	     PRESENT, not merely omitted — omitting it means "undeclared" and the
+	     build warns that the app opens files without saying how. Do NOT
+	     "fix" that warning with UISupportsDocumentBrowser instead: that
+	     declares the opposite behaviour and would defeat the inbox cleanup. -->
+	<!-- Export compliance. The app's only cryptography is CryptoKit AES.GCM
+	     sealing the local draft (DraftStore) plus Keychain key storage —
+	     Apple-provided, standard algorithms used solely to protect the user's
+	     own data on their own device. That is an exempt use, so App Store
+	     Connect can skip the export-compliance questionnaire on every build.
+	     If the app ever gains its own custom crypto or transmits encrypted
+	     data, this must be revisited. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>PDF</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.adobe.pdf</string>
+			</array>
+		</dict>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>EYEreport block drag</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.eyereport.block-drag</string>
+			<key>UTTypeTagSpecification</key>
+			<dict/>
+		</dict>
+	</array>
+</dict>
+</plist>
