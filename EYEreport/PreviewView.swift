@@ -35,17 +35,41 @@ struct PreviewView: View {
     @State private var fontSize: Double?
     @State private var savingToFiles = false
 
+    /// The rendered bytes, held in state rather than recomputed from a
+    /// computed property. `renderToPDFData` is EXPENSIVE (full pagination,
+    /// letterhead compositing, plus the embedded-source read-back and
+    /// possible PDFKit re-serialization), and a computed property ran it
+    /// once for the PDF view and AGAIN for the file-exporter document on
+    /// EVERY body pass. Any rebuild of the owning view — including one
+    /// caused by a keyboard-frame notification while a share extension is
+    /// on screen — therefore stalled the main thread with two full renders,
+    /// which starved the extension's hardware-key input. Render only when
+    /// the inputs actually change (`renderKey`).
+    @State private var renderedPDF = Data()
+    @State private var renderKey = ""
+
     private var selectedLetterhead: Letterhead? {
         guard let id = selectedLetterheadID else { return nil }
         return letterheadStore.letterheads.first { $0.id == id }
     }
 
-    private var pdfData: Data {
+    /// The current rendering, re-rendered only when the letterhead or text
+    /// size has actually changed. `document` is a tap-time snapshot and never
+    /// changes for the life of this sheet, so those two are the whole input
+    /// set. Returns the bytes as well as caching them, so Print and Share get
+    /// the right data without depending on a same-tick `@State` read-back.
+    @discardableResult
+    private func currentPDFData() -> Data {
+        let key = "\(selectedLetterheadID?.uuidString ?? "plain")|\(fontSize ?? 11)"
+        if key == renderKey, !renderedPDF.isEmpty { return renderedPDF }
         var doc = document
         doc.bodyFontSize = fontSize
-        return ReportRenderer.renderToPDFData(doc,
-                                              profile: profileStore.profile,
-                                              letterhead: selectedLetterhead)
+        let data = ReportRenderer.renderToPDFData(doc,
+                                                  profile: profileStore.profile,
+                                                  letterhead: selectedLetterhead)
+        renderedPDF = data
+        renderKey = key
+        return data
     }
 
     /// "DOE, Jane 2026-07-07" — patient (when present) + today, sanitized.
@@ -75,7 +99,7 @@ struct PreviewView: View {
 
     var body: some View {
         NavigationStack {
-            PDFKitView(data: pdfData)
+            PDFKitView(data: renderedPDF)
                 .ignoresSafeArea(edges: .bottom)
                 .navigationTitle("Preview")
                 .navigationBarTitleDisplayMode(.inline)
@@ -123,6 +147,7 @@ struct PreviewView: View {
                         }
                         .onChange(of: fontSize) {
                             onFontSizeChange?(fontSize)
+                            currentPDFData()
                         }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
@@ -143,12 +168,13 @@ struct PreviewView: View {
                         .onChange(of: selectedLetterheadID) {
                             letterheadStore.activeSelection =
                                 selectedLetterheadID.map { .letterhead($0) } ?? .plain
+                            currentPDFData()
                         }
                     }
                 }
         }
         .fileExporter(isPresented: $savingToFiles,
-                      document: PDFExportDocument(data: pdfData),
+                      document: PDFExportDocument(data: renderedPDF),
                       contentType: .pdf,
                       defaultFilename: exportBasename) { _ in }
         .onAppear {
@@ -165,6 +191,10 @@ struct PreviewView: View {
             }
             fontSize = document.bodyFontSize
             didSeedSelection = true
+            // Seeded values are already visible to this read, so this is the
+            // one render the sheet needs on open; the onChange handlers above
+            // are no-ops afterwards because the key is unchanged.
+            currentPDFData()
         }
     }
 
@@ -173,12 +203,13 @@ struct PreviewView: View {
     /// under the toolbar's Print button; iPhone-style plain presentation is
     /// the fallback.
     private func printPDF() {
+        let data = currentPDFData()
         let info = UIPrintInfo(dictionary: nil)
         info.jobName = exportFilename
         info.outputType = .general
         let controller = UIPrintInteractionController.shared
         controller.printInfo = info
-        controller.printingItem = pdfData
+        controller.printingItem = data
 
         if let window = Self.keyWindow {
             controller.present(from: Self.topTrailingAnchor(in: window), in: window,
@@ -196,11 +227,12 @@ struct PreviewView: View {
     /// for the system to purge (PHI briefly in tmp is inherent to
     /// exporting; the next share of the same report overwrites it).
     private func sharePDF() {
+        let data = currentPDFData()
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent(exportFilename)
         try? FileManager.default.removeItem(at: url)
         do {
-            try pdfData.write(to: url, options: .atomic)
+            try data.write(to: url, options: .atomic)
         } catch {
             return
         }
@@ -279,10 +311,23 @@ private struct PDFKitView: UIViewRepresentable {
         return view
     }
 
+    /// Rebuild the PDFDocument ONLY when the bytes actually changed. An
+    /// unconditional rebuild re-parsed the whole document (and reset the
+    /// scroll position) on every SwiftUI update — including updates arriving
+    /// while a share extension is on screen, where main-thread work costs
+    /// the extension its hardware-key input.
     func updateUIView(_ uiView: PDFView, context: Context) {
         uiView.displayMode = .singlePageContinuous
         uiView.displayDirection = .vertical
+        guard context.coordinator.lastData != data else { return }
+        context.coordinator.lastData = data
         uiView.document = PDFDocument(data: data)
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    final class Coordinator {
+        var lastData: Data?
     }
 }
 

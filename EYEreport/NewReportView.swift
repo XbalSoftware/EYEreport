@@ -92,7 +92,11 @@ struct NewReportView: View {
             Text("Your saved draft has unsaved changes. Starting a new report will discard it.")
         }
         .onReceive(autosaveTick) { _ in
-            if isEditing {
+            // Skipped while Preview is up: the document can't be edited
+            // there, and the tick's encode-and-compare is main-thread work
+            // that a presented share extension pays for. Leaving the sheet,
+            // and any scenePhase change, still autosaves.
+            if isEditing && previewPayload == nil {
                 draftStore.autosave(document: document, baseline: baseline)
             }
         }
@@ -108,6 +112,14 @@ struct NewReportView: View {
                         onFontSizeChange: { document.bodyFontSize = $0 })
                 .environmentObject(letterheadStore)
                 .environmentObject(profileStore)
+        }
+        // While Preview (and the Print / Share / Save panels it presents) is
+        // up, this screen is covered: freeze the keyboard-overlap publisher
+        // and the autosave tick so nothing rebuilds the hierarchy — and so
+        // nothing re-renders the preview PDF — behind a share extension that
+        // is trying to take hardware-keyboard input.
+        .onChange(of: previewPayload != nil) { _, showing in
+            keyboard.isSuspended = showing
         }
     }
 
@@ -489,6 +501,16 @@ struct NewReportView: View {
 /// keeps fields reachable above the keyboard is driven from here instead.
 private final class KeyboardOverlapObserver: ObservableObject {
     @Published var overlap: CGFloat = 0
+    /// Set while a modal covers the editor (the Preview sheet, and anything
+    /// it presents — Print, Share, Save to Files). The overlap only shifts
+    /// the editor's scroll spacer, which nobody can see then, so publishing
+    /// it would rebuild the whole New Report hierarchy for nothing. That
+    /// mattered: a share extension's own keyboard activity posts these
+    /// notifications INTO this app, and each rebuild re-rendered the preview
+    /// PDF on the main thread, which starved the extension's hardware-key
+    /// input. The last value is kept, not zeroed, so dismissing the sheet
+    /// restores the spacer it had.
+    var isSuspended = false
     private var tokens: [NSObjectProtocol] = []
 
     init() {
@@ -505,12 +527,21 @@ private final class KeyboardOverlapObserver: ObservableObject {
                 // notification DURING a SwiftUI view update (e.g. when focus
                 // changes as the view re-renders), and publishing @Published
                 // mid-update is the warning. async breaks out of that cycle.
-                DispatchQueue.main.async { self.overlap = newOverlap }
+                DispatchQueue.main.async {
+                    // Publish only a REAL change: the shortcut bar alone
+                    // posts a stream of same-height notifications, and each
+                    // publish rebuilt the whole screen.
+                    guard !self.isSuspended, self.overlap != newOverlap else { return }
+                    self.overlap = newOverlap
+                }
         })
         tokens.append(center.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil, queue: .main) { [weak self] _ in
-                DispatchQueue.main.async { self?.overlap = 0 }
+                DispatchQueue.main.async {
+                    guard let self, !self.isSuspended, self.overlap != 0 else { return }
+                    self.overlap = 0
+                }
         })
     }
 

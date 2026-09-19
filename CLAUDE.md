@@ -69,6 +69,13 @@ line written here as permanently public the moment it is committed.
 - This covers **screenshots** — App Store listings are public and permanent —
   and any sample IRIS export used for parser work: fabricate the whole
   document rather than lightly editing a real one.
+- **The rule targets IDENTIFIERS, not measurements.** Names, DOBs, health
+  numbers, addresses, phone/fax — anything that identifies a person or can be
+  used for fraud — must be self-evidently fake. Clinical values (a refraction,
+  a K reading, an acuity) identify nobody and are not a concern; some in the
+  repo are the developer's own and are deliberately kept (see PROJECT_STATE
+  Standing decisions, D26). Health-card numbers are the sharp end of this:
+  they cannot be rotated or reissued, so one in a commit is permanent.
 - Before committing anything containing a name, grep the working tree for it.
 - If real data ever does reach a commit, know that squashing history does NOT
   fully remove it: orphaned commits stay reachable on GitHub by direct SHA

@@ -196,6 +196,7 @@ row. A decision that gets overtaken is marked "superseded by #N" in place.
 | D23 | Letterhead choice is app-wide sticky, not per-document. `ReportDocument.letterheadID` stays unused. | One office, one letterhead, many letters. |
 | D24 | Export/Print/Share all use one filename source: "LAST, First yyyy-MM-dd", surname upper-cased at the point of use. | A hand-typed name files identically to an imported one. |
 | D25 | The `#if DEBUG` `ModelProof` block was deleted (sanctioned cleanup — done 2026-07-26 or earlier). | Superseded by real use; no longer earning its space. |
+| D26 | The refraction, VA and keratometry values in `DemographicsReviewSheet.swift`'s `#Preview` are the DEVELOPER'S OWN measurements and stay. **Do not re-flag them.** | The scrubbing rule targets data usable for identification or fraud — health-card numbers, names, DOBs, addresses. A refraction or K reading identifies nobody and can't be used against anyone. Note they are not self-evidently fake, so they will look flaggable to a fresh reader; this row is the answer. |
 
 ## Lessons learned
 
@@ -294,12 +295,27 @@ below are the index, plus the ones that only exist here.
 Newest first. Design rationale lives in CLAUDE.md; this is what happened when.
 
 ### 2026-08-08
-- Replaced a real-shaped Alberta PHN in `PatientDemographicsParser.swift`'s
-  comments with a `999 999 999` placeholder. **The original is still in the
-  pushed history and stays reachable by SHA on GitHub until garbage
-  collection** — see the note under the placeholder convention in CLAUDE.md.
+- Replaced the developer's own Alberta health-card number, which had been
+  sitting in a `PatientDemographicsParser.swift` comment as a format example,
+  with a `999 999 999` placeholder.
 - Added `CLAUDE.md` and `PROJECT_STATE.md` as Xcode file references so they
   are visible in the project navigator (not target members — not bundled).
+- **Docs tidy**: PROJECT_STATE restructured into a dated session log
+  (newest-first) with `Lessons learned` and the numbered `Standing decisions`
+  table above it; CLAUDE.md corrected where it had drifted from the code (the
+  spacer block was undocumented, `ModelProof` was already deleted, the About
+  links were already live, the user manual had moved into `docs/index.html`).
+- **History squashed to a single root commit** and force-pushed. GitHub Pages
+  rebuilt clean from `main` `/docs`; the live site is byte-identical to the
+  local file.
+- **Support ticket #4647221** raised to garbage-collect the two commits the
+  force-push orphaned (`1e4f79d…`, `e95a0bc…`), which still expose the old
+  health-card number. Precedent: #4633441 (this repo) and #4635637
+  (form-filler) were both actioned successfully — the pre-squash histories of
+  both repos now 404. **Verify with a 404 on both SHAs before considering it
+  closed**; a "cached views cleared" reply is not the same operation.
+- Local full-history bundles for both repos were deleted by the user. The
+  squashed repos are now the only copies of either project's history.
 
 ### 2026-08-04 — IRIS import, submission blockers, 1.0 submitted
 - **Patient-detail import from IRIS** built end to end and user-verified:
